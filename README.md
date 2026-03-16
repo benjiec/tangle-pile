@@ -26,10 +26,11 @@ Install NCBI SRA tools, see https://github.com/ncbi/sra-tools
 Pile works with the following data types
 
   * reference: files associated with a reference genome, each with a NCBI accession
+
   * workspace
-    ** reads: NGS sequencing reads, named with SRA accessions or other unique identifiers
-    ** transcriptome: uniquely named transcriptomes, e.g. .fna, .cds.fna, .faa
-    ** sample-alignments: a sample's reads, aligned against a transcriptome
+      * reads: NGS sequencing reads, named with SRA accessions or other unique identifiers
+      * transcriptome: uniquely named transcriptomes, e.g. .fna, .cds.fna, .faa
+      * sample-alignments: a sample's reads, aligned against a transcriptome
 
 Pile uses a set of scripts to process data.
 
