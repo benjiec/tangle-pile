@@ -8,6 +8,7 @@ from contextlib import contextmanager
 
 
 def run_command(*cmd):
+    print(" ".join(list(cmd)))
     subprocess.run(list(cmd), check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 @contextmanager

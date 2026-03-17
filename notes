@@ -74,6 +74,7 @@ cat aten.transcripts.fna aten.fna > aten.gentrome.fna
 salmon index -t aten.gentrome.fna -d aten.decoys.txt -i aten.salmon_index
 ```
 
+
 ## Quant using Salmon
 
 Change the "-p 2" to however many CPUs/cores you would like to use
@@ -92,21 +93,4 @@ salmon quant -i c_goreaui.salmon_index \
              -2 sra/SRR9331965_2.fastq \
              --validateMappings \
              -o c_goreaui-quants/SRR9331965 -p 2
-```
-
-## Investigate transcript fidelity
-
-```
-samtools view SRR9331959_sorted.bam "lcl|CAMXCT020004035.1_cds_CAL1160776.1_35975" > SRR9331959_CAL1160776.1.sam
-python3 scripts/analysis/pileup.py SRR9331959_CAL1160776.1.sam SRR9331959_CAL1160776.1.png
-```
-
-You can also search for a specific sequence using bowtie2, even though other
-tools may be better for this
-
-```
-bowtie2 --local -f -p 8 \
-        -x c_goreaui.transcriptome.bowtie.index \
-        -U query.fasta \
-        -S results.sam
 ```
