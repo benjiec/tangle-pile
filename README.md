@@ -31,9 +31,3 @@ Pile works with the following data types
       * reads: NGS sequencing reads, named with SRA accessions or other unique identifiers
       * transcriptome: uniquely named transcriptomes, e.g. .fna, .cds.fna, .faa
       * sample-alignments: a sample's reads, aligned against a transcriptome
-
-Pile uses a set of scripts to process data.
-
-Localization
-
-Dockerized code
