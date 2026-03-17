@@ -22,5 +22,7 @@ Pile works with the following data types
 
   * workspace
       * reads: NGS sequencing reads, named with SRA accessions or other unique identifiers
-      * transcriptome: uniquely named transcriptomes, e.g. .fna, .cds.fna, .faa
-      * sample-alignments: a sample's reads, aligned against a transcriptome
+      * transcriptomes: uniquely named transcriptomes, each with .fna, .cds.fna, .faa
+      * alignments: sample reads aligned against a transcriptome, named as <sra>-<transcriptome>.{bam}
+
+For more details on the file naming conventions, see `pile.Defaults` class.

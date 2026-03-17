@@ -32,6 +32,18 @@ def assert_exists(fn):
     assert path.exists()
 
 
+def mkdir_exists(dn):
+    if os.exists(dn):
+        return
+    try:
+        os.mkdir(dn)
+    except FileExistsError as e:
+        pass
+
+
+def clean_for_fn(fn):
+    return re.sub("\W", "_", fn)
+
 
 class Defaults(object):
 
@@ -53,10 +65,7 @@ class Defaults(object):
     @staticmethod
     def reads_dir(workspace):
         dn = f"{Defaults.workspace_dir(workspace)}/reads"
-        try:
-            os.mkdir(dn)
-        except FileExistsError as e:
-            pass
+        mkdir_exists(dn)
         return dn
 
     @staticmethod
@@ -66,3 +75,37 @@ class Defaults(object):
     @staticmethod
     def read_2(workspace, sra_accession):
         return f"{Defaults.reads_dir(workspace)}/{sra_accession}_2.fastq"
+
+    @staticmethod
+    def transcriptomes_dir(workspace):
+        dn = f"{Defaults.workspace_dir(workspace)}/transcriptomes"
+        mkdir_exists(dn)
+        return dn
+
+    @staticmethod
+    def transcriptome_dir(workspace, transcriptome):
+        clean_for_fn(transcriptome)
+        dn = Path(Defaults.transcriptomes_dir(workspace)) / transcriptome
+        mkdir_exists(dn)
+        return dn
+
+    @staticmethod
+    def alignments_dir(workspace):
+        dn = f"{Defaults.workspace_dir(workspace)}/alignments"
+        mkdir_exists(dn)
+        return dn
+
+    @staticmethod
+    def alignment_filename(workspace, sra_accession, transcriptome, suffix):
+        dn = Defaults.alignments_dir(workspace)
+        clean_for_fn(transcriptome)
+        fn = f"{sra_accession}-{transcriptome}.{suffix}"
+        return Path(dn) / fn
+
+    @staticmethod
+    def transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, suffix):
+        dn = Defaults.alignments_dir(workspace)
+        clean_for_fn(transcriptome)
+        clean_for_fn(transcript_accession)
+        fn = f"{sra_accession}-{transcriptome}-{transcript_accession}.{suffix}"
+        return Path(dn) / fn
