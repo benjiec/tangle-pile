@@ -35,15 +35,24 @@ def assert_exists(fn):
 
 class Defaults(object):
 
+    @staticmethod
+    def workspace_dir(workspace):
+        wsdir = os.environ.get('PILE_WORKSPACES_DIR')
+        if wsdir is None or not wsdir.startswith("/"):
+            raise Exception("PILE_WORKSPACES_DIR must be defined and must be an absolute path")
+        if workspace.startswith("/"):
+            raise Exception(f"Workspace {workspace} should not start with /")
+        return str(Path(wsdir) / workspace)
+
     @contextmanager
     @staticmethod
     def named_tempdir(workspace):
-        with named_tempdir(dir=workspace, prefix="temp-") as temp_dir:
+        with named_tempdir(dir=Defaults.workspace_dir(workspace), prefix="temp-") as temp_dir:
             yield temp_dir
 
     @staticmethod
     def reads_dir(workspace):
-        dn = f"{workspace}/reads"
+        dn = f"{Defaults.workspace_dir(workspace)}/reads"
         try:
             os.mkdir(dn)
         except FileExistsError as e:

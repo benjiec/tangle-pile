@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  pile:
+    build:
+      context: .
+    environment:
+      - PILE_WORKSPACES_DIR=/data
+    volumes:
+      - .:/pile

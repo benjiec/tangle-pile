@@ -15,18 +15,18 @@ RUN micromamba install -y -n base -c conda-forge -c bioconda \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 # 2. Set the working directory inside the container
-WORKDIR /app
+WORKDIR /pile
 
 # 3. Copy your requirements and install them
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 4. Copy your actual script/logic into the image
-COPY pile ./pile
+COPY . /pile
 
 # (Optional) Add your app directory to the PATH
 ENV PATH="/app:${PATH}"
-ENV PYTHONPATH="/app"
+ENV PYTHONPATH="/pile"
 
 # We don't use ENTRYPOINT or CMD because Nextflow 
 # will override them to run its own wrapper script.
