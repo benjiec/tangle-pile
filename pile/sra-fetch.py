@@ -3,14 +3,15 @@ from pile import run_command, named_tempdir, assert_exists, Defaults
 
 def sra_fetch(workspace, sra_read_accession):
     with Defaults.named_tempdir(workspace) as tempdir:
-        run_command("/Users/benjie/sratoolkit.3.3.0-mac-arm64/bin/fasterq-dump.3", 
+        run_command("fasterq-dump", 
                     "-O", Defaults.reads_dir(workspace),
                     "-t", tempdir,
                     sra_read_accession)
+        run_command("gzip", Defaults.read_1(workspace, sra_read_accession, gzip=False))
+        run_command("gzip", Defaults.read_2(workspace, sra_read_accession, gzip=False))
 
     assert_exists(Defaults.read_1(workspace, sra_read_accession))
     assert_exists(Defaults.read_2(workspace, sra_read_accession))
-
 
 
 if __name__ == "__main__":
@@ -18,7 +19,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("workspace")
-    parser.add_argument("sra_read_accession")
+    parser.add_argument("sra_accession")
     args = parser.parse_args()
 
     sra_fetch(args.workspace, args.sra_read_accession)

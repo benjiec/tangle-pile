@@ -1,3 +1,4 @@
+import re
 import os
 import shutil
 import tempfile
@@ -11,7 +12,7 @@ def run_command(*cmd):
 
 @contextmanager
 def named_tempdir(dir=None, prefix=None, keep_on_error=False):
-    with tempfile.TemporaryDirectory(dir=dir, prefix=prefix, delete=False) as temp_dir:
+    with tempfile.TemporaryDirectory(dir=dir, prefix=prefix) as temp_dir:
         try:
             yield temp_dir
         finally: 
@@ -31,15 +32,13 @@ def assert_exists(fn):
     path = Path(fn)
     assert path.exists()
 
-
 def mkdir_exists(dn):
-    if os.exists(dn):
+    if os.path.exists(dn):
         return
     try:
         os.mkdir(dn)
     except FileExistsError as e:
         pass
-
 
 def clean_for_fn(fn):
     return re.sub("\W", "_", fn)
@@ -69,12 +68,14 @@ class Defaults(object):
         return dn
 
     @staticmethod
-    def read_1(workspace, sra_accession):
-        return f"{Defaults.reads_dir(workspace)}/{sra_accession}_1.fastq"
+    def read_1(workspace, sra_accession, gzip=True):
+        fn = f"{Defaults.reads_dir(workspace)}/{sra_accession}_1.fastq"
+        return fn if gzip is False else f"{fn}.gz"
 
     @staticmethod
-    def read_2(workspace, sra_accession):
-        return f"{Defaults.reads_dir(workspace)}/{sra_accession}_2.fastq"
+    def read_2(workspace, sra_accession, gzip=True):
+        fn = f"{Defaults.reads_dir(workspace)}/{sra_accession}_2.fastq"
+        return fn if gzip is False else f"{fn}.gz"
 
     @staticmethod
     def transcriptomes_dir(workspace):
@@ -85,9 +86,17 @@ class Defaults(object):
     @staticmethod
     def transcriptome_dir(workspace, transcriptome):
         clean_for_fn(transcriptome)
-        dn = Path(Defaults.transcriptomes_dir(workspace)) / transcriptome
+        dn = str(Path(Defaults.transcriptomes_dir(workspace)) / transcriptome)
         mkdir_exists(dn)
         return dn
+
+    @staticmethod
+    def transcriptome_fasta(workspace, transcriptome):
+        return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcripts.fna")
+
+    @staticmethod
+    def transcriptome_cluster_fasta(workspace, transcriptome):
+        return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcript_clusters.fna")
 
     @staticmethod
     def alignments_dir(workspace):
@@ -100,7 +109,7 @@ class Defaults(object):
         dn = Defaults.alignments_dir(workspace)
         clean_for_fn(transcriptome)
         fn = f"{sra_accession}-{transcriptome}.{suffix}"
-        return Path(dn) / fn
+        return str(Path(dn) / fn)
 
     @staticmethod
     def transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, suffix):
@@ -108,4 +117,4 @@ class Defaults(object):
         clean_for_fn(transcriptome)
         clean_for_fn(transcript_accession)
         fn = f"{sra_accession}-{transcriptome}-{transcript_accession}.{suffix}"
-        return Path(dn) / fn
+        return str(Path(dn) / fn)
