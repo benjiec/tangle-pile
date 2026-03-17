@@ -8,3 +8,4 @@ services:
       - PILE_WORKSPACES_DIR=/data
     volumes:
       - .:/pile
+      - ${PILE_WORKSPACES_DIR}:/data

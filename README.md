@@ -3,22 +3,15 @@
 Piles of reads, piles of transcripts, piles of alignments, piles of evidence...
 
 This repository contains scripts and pipeline for processing NGS and RNAseq
-data.
+data. The aim here is to standardize naming and file location conventions for
+working with sequences, transcriptomes, alignments across species and samples.
 
 
 ## Setup
 
-MMSeqs2 docker image: `docker pull ghcr.io/soedinglab/mmseqs2`
-
-Conda environment
-
-```
-conda create -n pile_env -c bioconda -c conda-forge
-conda activate pile_env
-conda install -c bioconda bbmap salmon bowtie2 samtools transdecoder trinity
-```
-
-Install NCBI SRA tools, see https://github.com/ncbi/sra-tools
+Best to use the Docker setup. See Dockerfile for dependencies. See
+docker-compose.yml file for mounting local "workspaces" and "reference"
+directories onto Docker containers.
 
 
 ## Data Model and Directory Setup
