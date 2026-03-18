@@ -29,16 +29,15 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("workspace")
     parser.add_argument("sra_accession")
     parser.add_argument("transcriptome")
     parser.add_argument("--unclustered", action="store_true", default=False)
     parser.add_argument("--cpus", default=2)
     args = parser.parse_args()
 
-    bam_fn = Defaults.alignment_filename(args.workspace, args.sra_accession, args.transcriptome, "bam")
+    bam_fn = Defaults.alignment_filename(Defaults.workspace(), args.sra_accession, args.transcriptome, "bam")
 
-    with Defaults.named_tempdir(args.workspace) as temp_dir:
+    with Defaults.named_tempdir(Defaults.workspace()) as temp_dir:
         with named_tempfile(dir=temp_dir) as sam_fn:
-            bowtie2_align(args.workspace, args.transcriptome, args.unclustered, args.sra_accession, sam_fn, args.cpus)
+            bowtie2_align(Defaults.workspace(), args.transcriptome, args.unclustered, args.sra_accession, sam_fn, args.cpus)
             sam_to_sorted_bam(temp_dir, sam_fn, bam_fn)

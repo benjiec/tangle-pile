@@ -145,11 +145,10 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("workspace")
     parser.add_argument("sra_accession")
     parser.add_argument("transcriptome")
     parser.add_argument("transcripts", help="Expects a file of transcript IDs, or - for stdin")
     parser.add_argument("-a", "--accession", action="store_true", default=False, help="treat <transcripts> as the accession, not a file")
     args = parser.parse_args()
 
-    process_file_or_literal(args.accession, args.transcripts, lambda v: process_transcript(args.workspace, args.sra_accession, args.transcriptome, v))
+    process_file_or_literal(args.accession, args.transcripts, lambda v: process_transcript(Defaults.workspace(), args.sra_accession, args.transcriptome, v))

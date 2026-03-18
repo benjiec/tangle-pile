@@ -14,9 +14,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("workspace")
     parser.add_argument("transcriptome")
     parser.add_argument("--unclustered", action="store_true", default=False)
     args = parser.parse_args()
 
-    index(args.workspace, args.transcriptome, args.unclustered)
+    index(Defaults.workspace(), args.transcriptome, args.unclustered)

@@ -4,6 +4,7 @@ services:
       context: .
     environment:
       - PILE_WORKSPACES_DIR=/data
+      - PILE_WORKSPACE
     volumes:
       - .:/pile
       - ${PILE_WORKSPACES_DIR}:/data

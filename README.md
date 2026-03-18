@@ -40,28 +40,31 @@ For more details on the file naming conventions, see the `pile.Defaults` class.
 
 ## Docker Commands
 
+All commands require a workspace set using the PILE_WORKSPACE environment
+variable, which is passed to the container via `docker-compose.yml`.
+
 Fetching SRA reads
 
 ```
-docker-compose run --rm pile \
+PILE_WORKSPACE=doi:10.1126_sciadv.aba2498 docker-compose run --rm pile \
   python3 pile/sra-fetch.py \
-  doi:10.1126_sciadv.aba2498 SRR9331959
+  SRR9331959
 ```
 
 Indexing a transcriptome
 
 ```
-docker-compose run --rm pile \
+PILE_WORKSPACE=doi:10.1126_sciadv.aba2498 docker-compose run --rm pile \
   python3 pile/transcriptome-index.py \
-  doi:10.1126_sciadv.aba2498 SRR9331959_algae_denovo
+  SRR9331959_algae_denovo
 ```
 
 Align a sample against a transcriptome
 
 ```
-docker-compose run --rm pile \
+PILE_WORKSPACE=doi:10.1126_sciadv.aba2498 docker-compose run --rm pile \
   python3 pile/transcriptome-align.py \
-  doi:10.1126_sciadv.aba2498 SRR9331961 SRR9331959_algae_denovo \
+  SRR9331961 SRR9331959_algae_denovo \
   --cpus 6
 ```
 
@@ -69,9 +72,9 @@ Extract a transcript's alignments from the alignments of a sample's reads
 against a transcriptome
 
 ```
-docker-compose run --rm pile \
+PILE_WORKSPACE=doi:10.1126_sciadv.aba2498 docker-compose run --rm pile \
   python3 pile/alignment-extract.py -a \
-  doi:10.1126_sciadv.aba2498 SRR9331961 SRR9331959_algae_denovo TRINITY_DN7562_c0_g1_i1
+  SRR9331961 SRR9331959_algae_denovo TRINITY_DN7562_c0_g1_i1
 ``` 
 
 

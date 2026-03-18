@@ -61,6 +61,12 @@ def process_file_or_literal(conditional_for_literal, argument, task):
 class Defaults(object):
 
     @staticmethod
+    def workspace():
+        ws = os.environ.get('PILE_WORKSPACE')
+        assert ws is not None
+        return ws
+
+    @staticmethod
     def workspace_dir(workspace):
         wsdir = os.environ.get('PILE_WORKSPACES_DIR')
         if wsdir is None or not wsdir.startswith("/"):
