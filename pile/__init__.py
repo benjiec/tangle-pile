@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 import shutil
 import tempfile
 import subprocess
@@ -43,6 +44,18 @@ def mkdir_exists(dn):
 
 def clean_for_fn(fn):
     return re.sub("\W", "_", fn)
+
+
+def process_file_or_literal(conditional_for_literal, argument, task):
+    if conditional_for_literal:
+        task(argument)
+    else:
+        if argument == "-":
+            input_file = sys.stdin
+        else:
+            input_file = open(argument, "r")
+        for line in input_file:
+            task(line.strip())
 
 
 class Defaults(object):

@@ -70,7 +70,7 @@ against a transcriptome
 
 ```
 docker-compose run --rm pile \
-  python3 pile/alignment-extract.py \
+  python3 pile/alignment-extract.py -a \
   doi:10.1126_sciadv.aba2498 SRR9331961 SRR9331959_algae_denovo TRINITY_DN7562_c0_g1_i1
 ``` 
 

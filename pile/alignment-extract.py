@@ -2,7 +2,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from pile import run_command, Defaults
+from pile import run_command, Defaults, process_file_or_literal
 
 
 def final_robust_parse(file_path, transcript_len=1280):
@@ -130,6 +130,17 @@ def make_pileup(samfile, pngfile):
     plt.savefig(pngfile)
 
 
+def process_transcript(workspace, sra_accession, transcriptome, transcript_accession):
+    bam_fn = Defaults.alignment_filename(workspace, sra_accession, transcriptome, "bam")
+    sam_transcript_fn = Defaults.transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, "sam")
+    sam_transcript_png_fn = Defaults.transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, "png")
+
+    run_command("samtools", "view", bam_fn, transcript_accession, "-o", sam_transcript_fn)
+    print(sam_transcript_fn)
+    make_pileup(sam_transcript_fn, sam_transcript_png_fn)
+    print(sam_transcript_png_fn)
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -137,14 +148,8 @@ if __name__ == "__main__":
     parser.add_argument("workspace")
     parser.add_argument("sra_accession")
     parser.add_argument("transcriptome")
-    parser.add_argument("transcript_accession")
+    parser.add_argument("transcripts", help="Expects a file of transcript IDs, or - for stdin")
+    parser.add_argument("-a", "--accession", action="store_true", default=False, help="treat <transcripts> as the accession, not a file")
     args = parser.parse_args()
 
-    bam_fn = Defaults.alignment_filename(args.workspace, args.sra_accession, args.transcriptome, "bam")
-    sam_transcript_fn = Defaults.transcript_alignment_filename(args.workspace, args.sra_accession, args.transcriptome, args.transcript_accession, "sam")
-    sam_transcript_png_fn = Defaults.transcript_alignment_filename(args.workspace, args.sra_accession, args.transcriptome, args.transcript_accession, "png")
-
-    run_command("samtools", "view", bam_fn, args.transcript_accession, "-o", sam_transcript_fn)
-    print(sam_transcript_fn)
-    make_pileup(sam_transcript_fn, sam_transcript_png_fn)
-    print(sam_transcript_png_fn)
+    process_file_or_literal(args.accession, args.transcripts, lambda v: process_transcript(args.workspace, args.sra_accession, args.transcriptome, v))
