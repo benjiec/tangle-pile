@@ -33,6 +33,7 @@ Pile works with the following data types
       * reads: NGS sequencing reads, named with SRA accessions or other unique identifiers
       * transcriptomes: uniquely named transcriptomes, each with .fna, .cds.fna, .faa
       * alignments: sample reads aligned against a transcriptome, named as <sra>-<transcriptome>.bam
+      * transcripts: a transcript's alignments from those of a sample against a transcriptome
 
 For more details on the file naming conventions, see the `pile.Defaults` class.
 
@@ -64,20 +65,14 @@ docker-compose run --rm pile \
   --cpus 6
 ```
 
-Find an alignment for a transcript
+Extract a transcript's alignments from the alignments of a sample's reads
+against a transcriptome
 
 ```
 docker-compose run --rm pile \
-  python3 pile/alignment-find.py \
+  python3 pile/alignment-extract.py \
   doi:10.1126_sciadv.aba2498 SRR9331961 SRR9331959_algae_denovo TRINITY_DN7562_c0_g1_i1
 ``` 
-
-Get a picture of the alignment, using the filename printed by the above command
-
-```
-docker-compose run --rm pile \
-  python3 <sam-fn> <png-fn>
-```
 
 
 ## Insider a Docker Container

@@ -2,14 +2,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-
-
-import argparse
-
-ap = argparse.ArgumentParser()
-ap.add_argument("samfile")
-ap.add_argument("pngfile")
-args = ap.parse_args()
+from pile import run_command, Defaults
 
 
 def final_robust_parse(file_path, transcript_len=1280):
@@ -91,46 +84,67 @@ def final_robust_parse(file_path, transcript_len=1280):
     return depth, consensus, snp_final, indel_final, clip_final
 
 
-depth, consensus, snp_data, indel_data, clip_data = final_robust_parse(args.samfile)
+def make_pileup(samfile, pngfile):
 
-window = 50
-gc = []
-for i in range(len(consensus)):
-    sub = consensus[max(0, i-25):min(len(consensus), i+25)]
-    gc.append((sub.count('G')+sub.count('C'))/len(sub) if sub else 0)
+    depth, consensus, snp_data, indel_data, clip_data = final_robust_parse(samfile)
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8), gridspec_kw={'height_ratios':[5, 1]}, sharex=True)
-ax1.plot(range(len(depth)), depth, color='dodgerblue', lw=2, label='Read Depth')
+    window = 50
+    gc = []
+    for i in range(len(consensus)):
+        sub = consensus[max(0, i-25):min(len(consensus), i+25)]
+        gc.append((sub.count('G')+sub.count('C'))/len(sub) if sub else 0)
 
-def get_alpha(f):
-    return np.clip(2*f, 0.2, 1.0)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8), gridspec_kw={'height_ratios':[5, 1]}, sharex=True)
+    ax1.plot(range(len(depth)), depth, color='dodgerblue', lw=2, label='Read Depth')
 
-msize = 120
-# Legend tracking
-snp_label, indel_label, clip_label = "SNP/MNP", "Indel", "Clip"
+    def get_alpha(f):
+        return np.clip(2*f, 0.2, 1.0)
 
-for i, (p, f) in enumerate(snp_data):
-    ax1.scatter(p, depth[p] + 30, marker='v', color='red', s=msize, alpha=get_alpha(f), 
-                edgecolors='none', label=snp_label if i == 0 else "")
-for i, (p, f) in enumerate(indel_data):
-    ax1.scatter(p, depth[p] + 70, marker='s', color='green', s=msize, alpha=get_alpha(f), 
-                edgecolors='none', label=indel_label if i == 0 else "")
-for i, (p, f) in enumerate(clip_data):
-    y_off = depth[p] + 110 if depth[p] > 50 else np.max(depth)*0.15
-    ax1.scatter(p, y_off, marker='x', color='purple', s=msize+50, alpha=get_alpha(f), 
-                edgecolors='none', label=clip_label if i == 0 else "")
+    msize = 120
+    # Legend tracking
+    snp_label, indel_label, clip_label = "SNP/MNP", "Indel", "Clip"
 
-ax1.set_ylabel('Read Depth')
-ax1.set_title('Pileup Visualization: Sample 1 (Divergence Spectrum)')
-ax1.set_xlim(-80, 1360)
-ax1.legend(loc='upper right')
+    for i, (p, f) in enumerate(snp_data):
+        ax1.scatter(p, depth[p] + 30, marker='v', color='red', s=msize, alpha=get_alpha(f), 
+                    edgecolors='none', label=snp_label if i == 0 else "")
+    for i, (p, f) in enumerate(indel_data):
+        ax1.scatter(p, depth[p] + 70, marker='s', color='green', s=msize, alpha=get_alpha(f), 
+                    edgecolors='none', label=indel_label if i == 0 else "")
+    for i, (p, f) in enumerate(clip_data):
+        y_off = depth[p] + 110 if depth[p] > 50 else np.max(depth)*0.15
+        ax1.scatter(p, y_off, marker='x', color='purple', s=msize+50, alpha=get_alpha(f), 
+                    edgecolors='none', label=clip_label if i == 0 else "")
 
-cmap = mcolors.LinearSegmentedColormap.from_list("GC", ["blue", "yellow", "red"])
-ax2.imshow(np.array(gc).reshape(1, -1), aspect='auto', cmap=cmap, norm=mcolors.Normalize(0.2, 0.8), extent=[0, 1280, 0, 1])
-ax2.set_yticks([])
-ax2.set_ylabel('GC %')
-ax2.set_xlabel('Transcript Position (bp)')
+    ax1.set_ylabel('Read Depth')
+    ax1.set_title('Pileup Visualization: Sample 1 (Divergence Spectrum)')
+    ax1.set_xlim(-80, 1360)
+    ax1.legend(loc='upper right')
 
-plt.tight_layout()
-plt.savefig(args.pngfile)
-print("Final plot with legend saved.")
+    cmap = mcolors.LinearSegmentedColormap.from_list("GC", ["blue", "yellow", "red"])
+    ax2.imshow(np.array(gc).reshape(1, -1), aspect='auto', cmap=cmap, norm=mcolors.Normalize(0.2, 0.8), extent=[0, 1280, 0, 1])
+    ax2.set_yticks([])
+    ax2.set_ylabel('GC %')
+    ax2.set_xlabel('Transcript Position (bp)')
+
+    plt.tight_layout()
+    plt.savefig(pngfile)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("workspace")
+    parser.add_argument("sra_accession")
+    parser.add_argument("transcriptome")
+    parser.add_argument("transcript_accession")
+    args = parser.parse_args()
+
+    bam_fn = Defaults.alignment_filename(args.workspace, args.sra_accession, args.transcriptome, "bam")
+    sam_transcript_fn = Defaults.transcript_alignment_filename(args.workspace, args.sra_accession, args.transcriptome, args.transcript_accession, "sam")
+    sam_transcript_png_fn = Defaults.transcript_alignment_filename(args.workspace, args.sra_accession, args.transcriptome, args.transcript_accession, "png")
+
+    run_command("samtools", "view", bam_fn, args.transcript_accession, "-o", sam_transcript_fn)
+    print(sam_transcript_fn)
+    make_pileup(sam_transcript_fn, sam_transcript_png_fn)
+    print(sam_transcript_png_fn)

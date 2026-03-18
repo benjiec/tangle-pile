@@ -109,13 +109,19 @@ class Defaults(object):
     def alignment_filename(workspace, sra_accession, transcriptome, suffix):
         dn = Defaults.alignments_dir(workspace)
         clean_for_fn(transcriptome)
-        fn = f"{sra_accession}-{transcriptome}.{suffix}"
+        fn = f"{sra_accession}.{transcriptome}.{suffix}"
         return str(Path(dn) / fn)
 
     @staticmethod
+    def transcripts_dir(workspace):
+        dn = f"{Defaults.workspace_dir(workspace)}/transcripts"
+        mkdir_exists(dn)
+        return dn
+
+    @staticmethod
     def transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, suffix):
-        dn = Defaults.alignments_dir(workspace)
+        dn = Defaults.transcripts_dir(workspace)
         clean_for_fn(transcriptome)
         clean_for_fn(transcript_accession)
-        fn = f"{sra_accession}-{transcriptome}-{transcript_accession}.{suffix}"
+        fn = f"{transcript_accession}.{sra_accession}.{transcriptome}.{suffix}"
         return str(Path(dn) / fn)
