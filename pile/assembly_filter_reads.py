@@ -35,14 +35,14 @@ def bowtie2_filter_reads_capture(read_1, read_2, genomic_fn, prefix, cpus):
     )
 
 
-def normalize_reads(read_1, read_2, normalized_read_1, normalized_read_2, depth):
+def normalize_reads(read_1, read_2, normalized_read_1, normalized_read_2, target_depth):
     run_command(
         "bbnorm.sh",
-        "in1", read_1,
-        "in2", read_2,
-        "out1", normalized_read_1,
-        "out2", normalized_read_2,
-        "target", depth
+        "-in1="+read_1,
+        "-in2="+read_2,
+        "-out1="+normalized_read_1,
+        "-out2="+normalized_read_2,
+        "target="+str(target_depth)
     )
 
 
@@ -86,8 +86,8 @@ if __name__ == "__main__":
         reads_2 = str(output_reads_2)
         to_clean.extend([reads_1, reads_2])
 
-    filtered_reads_1 = Defaults.transcriptome_filtered_read_1(Default.workspace(), args.transcriptome, args.sra_accession)
-    filtered_reads_2 = Defaults.transcriptome_filtered_read_2(Default.workspace(), args.transcriptome, args.sra_accession)
+    filtered_reads_1 = Defaults.transcriptome_filtered_read_1(Defaults.workspace(), args.transcriptome, args.sra_accession)
+    filtered_reads_2 = Defaults.transcriptome_filtered_read_2(Defaults.workspace(), args.transcriptome, args.sra_accession)
     normalize_reads(reads_1, reads_2, filtered_reads_1, filtered_reads_2, 50)
 
     for fn in to_clean:

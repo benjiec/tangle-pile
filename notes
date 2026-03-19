@@ -1,18 +1,4 @@
 
-## Pooling workflow 
-
-Pall the filtered sequences together than normalize again
-
-```
-bbnorm.sh \
-        in1=./SRR9331959_algae_captured.1.fastq \
-        in2=./SRR9331959_algae_captured.2.fastq \
-        out1=SRR9331959_norm.1.fq \
-        out2=SRR9331959_norm.2.fq \
-        target=50
-```
-
-
 ## Quantifying against reference rather than assembled transcriptome
 
 Building decoy-aware index, using genomic sequence as decoys, as reads may
@@ -33,6 +19,8 @@ salmon index -t aten.gentrome.fna -d aten.decoys.txt -i aten.salmon_index
 ## Quant using Salmon
 
 Change the "-p 2" to however many CPUs/cores you would like to use
+
+Build salmon index over CLUSTERED transcript files, to avoid diluting signals.
 
 ```
 salmon quant -i aten.salmon_index \

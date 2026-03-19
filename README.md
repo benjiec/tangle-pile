@@ -133,7 +133,7 @@ Search for a sequence
 
 ```
 bowtie2 --local -f -p 8 \
-  -x /users/pile/doi:10.1126_sciadv.aba2498/transcriptomes/SRR9331959_algae_denovo/transcript_clusters.fna \
+  -x /users/pile/doi:10.1126_sciadv.aba2498/transcriptomes/SRR9331959_algae_denovo/transcripts.fna \
   -U query.fasta \
   -S results.sam
 ```
@@ -148,23 +148,23 @@ Trinity assembly, after you have filtered the reads. First cd to the workspace
 transcriptome directory.
 
 ```
-Trinity --seqType fq \         
+Trinity --seqType fq --max_memory 20G --CPU 8 --no_normalize_reads \
         --left SRR9331961_filtered_1.fastq \
         --right SRR9331961_filtered_2.fastq \
-        --max_memory 20G \
-        --CPU 8 \
-        --output transcript --no_normalize_reads
+        --output trinity_transcript 
 
 TrinityStats.pl transcript.Trinity.fasta
 ```
 
-If you have mmseqs Docker image, then use this to cluster transcripts
+If you have mmseqs Docker image, then use the following to cluster transcripts.
+Note that transcript clusters should only be used for quantification, when you
+don't want to dilute signal. For most genetics work, unclustered, assembled
+transcripts may be best.
 
 ```
 scripts/mmseqs-cluster-trinity-transcripts \
   transcript.Trinity.fasta
 ```
-
 
 
 ## Download data from NCBI SRA
