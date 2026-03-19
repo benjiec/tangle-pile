@@ -55,6 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--remove", default=None)
     parser.add_argument("--capture", default=None)
     parser.add_argument("--cpus", default=4, type=int)
+    parser.add_argument("--force", default=False, action="store_true")
     args = parser.parse_args()
 
     orig_reads_1 = reads_1 = Defaults.read_1(Defaults.workspace(), args.sra_accession)
@@ -66,20 +67,24 @@ if __name__ == "__main__":
     if args.remove:
         genomic_fn = Defaults.ncbi_genome_genomic(args.remove)
         prefix = str(Path(transcriptome_dir) / (args.sra_accession+f"_{args.remove}_removed"))
-        bowtie2_filter_reads_remove(reads_1, reads_2, genomic_fn, prefix+".fastq", args.cpus)
-        reads_1 = prefix+"_1.fastq"
-        reads_2 = prefix+"_2.fastq"
-        if reads_1 != orig_reads_1:
-            to_clean.extend([reads_1, reads_2])
+        output_reads_1 = Path(prefix+".1.fastq")
+        output_reads_2 = Path(prefix+".2.fastq")
+        if args.force or not output_reads_1.exists() or output_reads_1.stat().st_size == 0:
+            bowtie2_filter_reads_remove(reads_1, reads_2, genomic_fn, prefix+".fastq", args.cpus)
+        reads_1 = str(output_reads_1)
+        reads_2 = str(output_reads_2)
+        to_clean.extend([reads_1, reads_2])
 
     if args.capture:
         genomic_fn = Defaults.ncbi_genome_genomic(args.capture)
         prefix = str(Path(transcriptome_dir) / (args.sra_accession+f"_{args.capture}_captured"))
-        bowtie2_filter_reads_capture(reads_1, reads_2, genomic_fn, prefix+".fastq", args.cpus)
-        reads_1 = prefix+"_1.fastq"
-        reads_2 = prefix+"_2.fastq"
-        if reads_1 != orig_reads_1:
-            to_clean.extend([reads_1, reads_2])
+        output_reads_1 = Path(prefix+".1.fastq")
+        output_reads_2 = Path(prefix+".2.fastq")
+        if args.force or not output_reads_1.exists() or output_reads_1.stat().st_size == 0:
+            bowtie2_filter_reads_capture(reads_1, reads_2, genomic_fn, prefix+".fastq", args.cpus)
+        reads_1 = str(output_reads_1)
+        reads_2 = str(output_reads_2)
+        to_clean.extend([reads_1, reads_2])
 
     filtered_reads_1 = Defaults.transcriptome_filtered_read_1(Default.workspace(), args.transcriptome, args.sra_accession)
     filtered_reads_2 = Defaults.transcriptome_filtered_read_2(Default.workspace(), args.transcriptome, args.sra_accession)
