@@ -121,7 +121,7 @@ Actual Trinity assembly, do that inside a Docker container since there are
 various flags to use and memory issues to monitor.
 
 
-## Insider a Docker Container
+## Non-Docker Commands
 
 The following commands can be run inside a docker container, in case you need to do some custom analysis. To get into a Docker container, run
 
@@ -162,8 +162,10 @@ don't want to dilute signal. For most genetics work, unclustered, assembled
 transcripts may be best.
 
 ```
-scripts/mmseqs-cluster-trinity-transcripts \
-  transcript.Trinity.fasta
+cd <transcriptome_directory>
+<pile_repo_directory>/scripts/mmseqs-cluster-trinity-transcripts \
+  transcripts.fna
+mv transcripts.fna_rep_seq.fna.gz transcript_clusters.fna.gz
 ```
 
 
