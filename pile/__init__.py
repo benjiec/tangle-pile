@@ -58,6 +58,24 @@ def process_file_or_literal(conditional_for_literal, argument, task):
             task(line.strip())
 
 
+class FastaHeaderProvenance(object):
+
+    @staticmethod
+    def add_and_str(target_accession, provenance):
+        assert "<" not in target_accession
+        new_provenance = [target_accession]
+        if provenance is not None:
+            new_provenance.extend(provenance)
+        return " < ".join(new_provenance)
+
+    @staticmethod
+    def unpack(header):
+        if "<" not in header:
+            return [header]
+        tokens = re.split(r"\s*\<\s*", header)
+        return tokens
+
+
 class Defaults(object):
 
     @staticmethod

@@ -4,7 +4,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from pile import run_command, Defaults, process_file_or_literal
+from pile import run_command, Defaults, process_file_or_literal, FastaHeaderProvenance
 
 
 def final_robust_parse(transcript_accession, file_path):
@@ -104,7 +104,7 @@ def final_robust_parse(transcript_accession, file_path):
     return transcript_len, depth, consensus, snp_final, indel_final, clip_final
 
 
-def make_pileup(transcript_accession, samfile, pngfile):
+def make_pileup(header, transcript_accession, samfile, pngfile):
 
     transcript_len, depth, consensus, snp_data, indel_data, clip_data = final_robust_parse(transcript_accession, samfile)
 
@@ -136,7 +136,7 @@ def make_pileup(transcript_accession, samfile, pngfile):
                     edgecolors='none', label=clip_label if i == 0 else "")
 
     ax1.set_ylabel('Read Depth')
-    ax1.set_title('Pileup Visualization: Sample 1 (Divergence Spectrum)')
+    ax1.set_title(header)
     ax1.set_xlim(-80, transcript_len+80)
     ax1.legend(loc='upper right')
 
@@ -151,13 +151,18 @@ def make_pileup(transcript_accession, samfile, pngfile):
 
 
 def process_transcript(workspace, sra_accession, transcriptome, transcript_accession):
+
+    header = transcript_accession
+    provenance = FastaHeaderProvenance.unpack(header)
+    transcript_accession = provenance[0]
+
     bam_fn = Defaults.alignment_filename(workspace, sra_accession, transcriptome, "bam")
     sam_transcript_fn = Defaults.transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, "sam")
     sam_transcript_png_fn = Defaults.transcript_alignment_filename(workspace, sra_accession, transcriptome, transcript_accession, "png")
 
     # very lazy: run first time with -h to include header, then second time w/o since we don't care about the headers
     run_command("samtools", "view", "-h", bam_fn, transcript_accession, "-o", sam_transcript_fn)
-    make_pileup(transcript_accession, sam_transcript_fn, sam_transcript_png_fn)
+    make_pileup(header, transcript_accession, sam_transcript_fn, sam_transcript_png_fn)
     print(sam_transcript_png_fn)
     run_command("samtools", "view", bam_fn, transcript_accession, "-o", sam_transcript_fn)
     print(sam_transcript_fn)

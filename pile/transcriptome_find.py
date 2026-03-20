@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from pile import Defaults, process_file_or_literal
+from pile import Defaults, process_file_or_literal, FastaHeaderProvenance
 from pile.fasta import read_fasta_as_dict
 
 
@@ -25,21 +25,26 @@ if __name__ == "__main__":
     accessions = []
     process_file_or_literal(not args.file, args.transcript, lambda v: accessions.append(v))
 
-    for accession in accessions:
+    for fasta_header in accessions:
+        provenance = FastaHeaderProvenance.unpack(fasta_header)
+        accession = provenance[0]
+
         if accession in entries:
-            print(f">{accession}\n{entries[accession]}")
+            print(f">{fasta_header}\n{entries[accession]}")
         elif args.exact:
             raise Exception(f"Cannot find sequence with accession {accession}")
         else:
             found = False
             for k,v in entries.items():
                 if "_"+accession.lower()+"_" in k.lower():
-                    print(f">{k}\n{v}")
+                    new_header = FastaHeaderProvenance.add_and_str(k, provenance)
+                    print(f">{new_header}\n{v}")
                     found = True
             if not found:
                 for k,v in entries.items():
                     if accession.lower() in k.lower() or k.lower() in accession.lower():
-                        print(f">{k}\n{v}")
+                        new_header = FastaHeaderProvenance.add_and_str(k, provenance)
+                        print(f">{new_header}\n{v}")
                         found = True
             if not found:
                 raise Exception(f"Cannot find sequence with accession {accession}")

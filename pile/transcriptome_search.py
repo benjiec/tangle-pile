@@ -2,18 +2,18 @@
 
 import os
 import subprocess
-from pile import Defaults, process_file_or_literal
+from pile import Defaults, process_file_or_literal, FastaHeaderProvenance
 from pile.fasta import read_fasta_as_dict
 
 
-def bowtie2_search_sequence(fn, queries):
+def bowtie2_search_sequence(fn, query_sequences):
 
     query_text = []
-    for i,s in enumerate(queries):
-        query_text.append(f">query_{i}\n{s}\n")
+    for a,s in query_sequences.items():
+        query_text.append(f">{a}\n{s}\n")
     query_text = "".join(query_text)
 
-    cmd = f"bowtie2 --local -x {fn} -f -U - | samtools view -F 4 | cut -f3 | sort -u"
+    cmd = f"bowtie2 --local -x {fn} -f -U - | samtools view -F 4 | cut -f 1,3,6 | sort -u"
 
     result = subprocess.run(
         cmd,
@@ -23,8 +23,10 @@ def bowtie2_search_sequence(fn, queries):
         text=True
     )
 
-    hit_ids = result.stdout.splitlines()
-    return hit_ids
+    results = []
+    for l in result.stdout.splitlines():
+        results.append(l.split("\t"))
+    return results
 
 
 if __name__ == "__main__":
@@ -40,13 +42,14 @@ if __name__ == "__main__":
     if not os.path.exists(tx_fn+".1.bt2"):
         raise Exception("Cannot find bowtie index")
 
-    query_sequences = []
+    query_sequences = {}
     if args.no_fasta:
-        process_file_or_literal(False, args.sequence_file, lambda s: query_sequences.append(s))
+        process_file_or_literal(False, args.sequence_file, lambda s: query_sequences.update(f"query_{len(query_sequences.keys())}", s))
     else:
-        queries = read_fasta_as_dict(args.sequence_file)
-        query_sequences.extend(queries.values())
+        query_sequences = read_fasta_as_dict(args.sequence_file, preserve_full_accession=True)
 
-    hit_ids = bowtie2_search_sequence(tx_fn, query_sequences)
-    for hit in hit_ids:
-        print(hit)
+    results = bowtie2_search_sequence(tx_fn, query_sequences)
+    for query, hit, cigar in results:
+        provenance = FastaHeaderProvenance.unpack(query)
+        with_cigar = FastaHeaderProvenance.unpack(FastaHeaderProvenance.add_and_str(cigar, provenance))
+        print(FastaHeaderProvenance.add_and_str(hit, with_cigar))

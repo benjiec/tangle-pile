@@ -15,7 +15,7 @@ def open_fasta_to_read(fn):
             yield f
 
 
-def read_fasta_as_dict(path):
+def read_fasta_as_dict(path, preserve_full_accession=False):
     sequences_by_accession = {}
     current_acc = None
     current_seq_parts = []
@@ -32,8 +32,11 @@ def read_fasta_as_dict(path):
                 if current_acc is not None:
                     sequences_by_accession[current_acc] = "".join(current_seq_parts)
                 header_content = line[1:].strip()
-                # Accession is the first whitespace-delimited token
-                accession = header_content.split(None, 1)[0]
+                if preserve_full_accession:
+                    accession = header_content
+                else:
+                    # accession is the first whitespace-delimited token
+                    accession = header_content.split(None, 1)[0]
                 current_acc = accession
                 current_seq_parts = []
             else:
