@@ -166,6 +166,7 @@ cd <transcriptome_directory>
 <pile_repo_directory>/scripts/mmseqs-cluster-trinity-transcripts \
   transcripts.fna
 mv transcripts.fna_rep_seq.fna.gz transcript_clusters.fna.gz
+mv transcripts.fna_cluster.tsv transcript_clusters.tsv
 ```
 
 

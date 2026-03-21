@@ -1,7 +1,7 @@
 #!/bin/bash
 
 docker run --rm \
-  -v $PWD:/work \
+  --mount type=bind,source="$PWD",target=/work \
   ghcr.io/soedinglab/mmseqs2 \
   easy-cluster /work/$1 /work/$1 /tmp \
   --min-seq-id 0.95 -c 0.85 --cov-mode 1
