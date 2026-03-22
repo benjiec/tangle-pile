@@ -40,7 +40,7 @@ Pile works with the following data types
 For more details on the file naming conventions, see the `pile.Defaults` class.
 
 
-## Docker Commands
+## Using Docker Image
 
 Use the following to make a bowtie index, on a path off the top workspaces
 directory (i.e. not specific to a workspace). E.g.
@@ -121,7 +121,7 @@ Actual Trinity assembly, do that inside a Docker container since there are
 various flags to use and memory issues to monitor.
 
 
-## Non-Docker Commands
+## Inside Docker Container
 
 The following commands can be run inside a docker container, in case you need to do some custom analysis. To get into a Docker container, run
 
@@ -142,6 +142,9 @@ Use TransDecoder to predict ORFs
 
 ```
 TransDecoder.LongOrfs -t transcripts.fna -m 100
+cp transcripts.fna.transdecoder_dir/longest_orfs.pep proteins.faa
+cp transcripts.fna.transdecoder_dir/longest_orfs.gff3 proteins.gff3
+rm -rf transcripts.fna.transdecoder_dir
 ```
 
 Trinity assembly, after you have filtered the reads. First cd to the workspace
@@ -155,6 +158,9 @@ Trinity --seqType fq --max_memory 20G --CPU 8 --no_normalize_reads \
 
 TrinityStats.pl transcript.Trinity.fasta
 ```
+
+
+# Clustering Sequences
 
 If you have mmseqs Docker image, then use the following to cluster transcripts.
 Note that transcript clusters should only be used for quantification, when you
