@@ -1,5 +1,10 @@
 FROM mambaorg/micromamba:latest
 
+USER root
+RUN apt-get update && apt-get install -y \
+    git
+
+USER $MAMBA_USER
 RUN micromamba install -y -n base -c conda-forge -c bioconda \
     python=3.11 \
     pip=26.0.1 \
@@ -12,21 +17,18 @@ RUN micromamba install -y -n base -c conda-forge -c bioconda \
     sra-tools=3.2.1 \
     && micromamba clean --all --yes
 
-ARG MAMBA_DOCKERFILE_ACTIVATE=1
-
-# 2. Set the working directory inside the container
 WORKDIR /pile
 
-# 3. Copy your requirements and install them
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml ./ 
+RUN micromamba run -n base pip install --no-cache-dir . || true
 
-# 4. Copy your actual script/logic into the image
-COPY . /pile
+COPY --chown=$MAMBA_USER:$MAMBA_USER . .
+RUN micromamba run -n base pip install --no-cache-dir .
 
-# (Optional) Add your app directory to the PATH
 ENV PATH="/pile:${PATH}"
 ENV PYTHONPATH="/pile"
+
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 # We don't use ENTRYPOINT or CMD because Nextflow 
 # will override them to run its own wrapper script.

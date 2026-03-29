@@ -161,6 +161,10 @@ class Defaults(object):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "proteins.faa")
 
     @staticmethod
+    def transcriptome_proteins_gff(workspace, transcriptome):
+        return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "proteins.gff3")
+
+    @staticmethod
     def transcriptome_cluster_fasta(workspace, transcriptome):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcript_clusters.fna")
 

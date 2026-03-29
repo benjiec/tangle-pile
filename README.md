@@ -70,6 +70,15 @@ PILE_WORKSPACE=doi:10.1126_sciadv.aba2498 docker-compose run --rm pile \
   SRR9331959_algae_denovo
 ```
 
+Converting transcriptome GFF file, from transdecoder, into detected table (you
+need to run TransDecoder first, see inside Docker commands below)
+
+```
+PILE_WORKSPACE=doi:10.1126_sciadv.aba2498 docker-compose run --rm pile \
+  python3 pile/transdecoder_to_detected.py \
+  SRR9331959_algae_denovo
+```
+
 Align a sample against a transcriptome
 
 ```
