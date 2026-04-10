@@ -209,11 +209,11 @@ class TestDetectedTSV(unittest.TestCase):
             results_to_detected_table(results, detected_tsv, "foo", batch="20260327_ff30c5d5")
 
             expected = """
-detection_type	detection_method	batch	query_accession	query_database	query_type	target_accession	target_database	target_type	query_start	query_end	target_start	target_end	evalue	bitscore	bitscore_threshold	custom_metric_name	custom_metric_value
-sequence	transdecoder	20260327_ff30c5d5	tx1	foo	transcript	g1	foo	gene	5443	1	1	5443					
-sequence	transdecoder	20260327_ff30c5d5	g1	foo	gene	m1	foo	protein	4	5193	1	1730					
-sequence	transdecoder	20260327_ff30c5d5	tx2	foo	transcript	g2	foo	gene	1	5491	1	5491					
-sequence	transdecoder	20260327_ff30c5d5	g2	foo	gene	m2	foo	protein	251	5488	1	1746					
+detection_type	detection_method	batch	query_accession	query_database	query_type	target_accession	target_database	target_type	target_model	query_start	query_end	target_start	target_end	evalue	bitscore	bitscore_threshold	custom_metric_name	custom_metric_value
+sequence	transdecoder	20260327_ff30c5d5	tx1	foo	transcript	g1	foo	gene		5443	1	1	5443					
+sequence	transdecoder	20260327_ff30c5d5	g1	foo	gene	m1	foo	protein		4	5193	1	1730					
+sequence	transdecoder	20260327_ff30c5d5	tx2	foo	transcript	g2	foo	gene		1	5491	1	5491					
+sequence	transdecoder	20260327_ff30c5d5	g2	foo	gene	m2	foo	protein		251	5488	1	1746					
 """
 
             with open(detected_tsv, "r") as f:
