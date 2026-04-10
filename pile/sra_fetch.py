@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from pile import run_command, named_tempdir, assert_exists, Defaults
+from pile import run_command, named_tempdir, assert_exists
+from pile.defaults import Defaults
 
 
 def sra_fetch(workspace, sra_read_accession):

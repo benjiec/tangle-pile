@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
-from pile import run_command, Defaults
+from pile import run_command
+from pile.defaults import Defaults
 
 
 def bowtie2_index(fn):

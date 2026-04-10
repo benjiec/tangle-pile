@@ -1,6 +1,7 @@
 from tangle import open_file_to_read, unique_batch
 from tangle.detected import DetectedTable
-from pile import Defaults, Path
+from pile import Path
+from pile.defaults import Defaults
 
 
 def parse_transdecoder_gff(file_path):

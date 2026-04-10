@@ -63,21 +63,31 @@ pip3 install pysradb
 pysradb metadata PRJNA591730 > metadata.tsv
 ```
 
-Assuming you have a transcriptome -- i.e. a `transcripts.fna` file in the
-transcriptome directory, index the transcriptome like this
+Quantification requires a transcriptome. For transcriptome files downloaded
+from NCBI or paper, cluster them first using MMSeqs2, then put the following
+files in the transcriptome directory
 
-(NOTE - you probably want to cluster a transcriptome you downloaded from NCBI
-or article supplemental data section, see cluster section below)
+  * `transcripts.fna`
+  * `transcripts.unclustered.fna`
+  * `transcript_clusters.tsv`
+  * `proteins.faa`
+
+If creating a transcriptome from scratch using Trinity, follow the Trinity
+workflow steps below.
+
+Create Salmon index for the transcriptome
 
 ```
-PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_index.py \
-  SRR9331959_algae_denovo
+PILE_WORKSPACE=PM32426508 pile-py pile/quant_index.py \
+  GCA_947184155.2
 ```
 
-Create Salmon index, then use Salmon to map reads to transcriptomes, e.g.
+Then quant a SRR sample against the transcriptome with
 
-# XXX fix the following and use docker commands
-# XXX always put quants in a standard directory with transcriptome
+```
+PILE_WORKSPACE=PM32426508 pile-py pile/quant_reads.py \
+  GCA_947184155.2 SRR9331959
+```
 
 ```
 # in docker, in transcriptome directory
@@ -133,7 +143,7 @@ signal. For most genetics work, unclustered transcripts may be best.
 <pile_repo_directory>/scripts/mmseqs-cluster-trinity-transcripts \
   transcripts.fna
 mv transcripts.fna transcripts.unclustered.fna
-mv transcripts.fna_rep_seq.fna.gz transcript.fna.gz
+mv transcripts.fna_rep_seq.fna.gz transcripts.fna.gz
 mv transcripts.fna_cluster.tsv transcript_clusters.tsv
 ```
 
@@ -172,11 +182,18 @@ directory (i.e. not specific to a workspace). E.g.
 pile-py pile/bowtie_index.py ncbi/GCA_014633955.1/genomic.fna
 ```
 
+Index a transcriptome using the following
+
+```
+PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_index.py \
+  SRR9331959_algae_denovo
+```
+
 Align a sample against a transcriptome
 
 ```
 PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_align.py \
-  SRR9331961 SRR9331959_algae_denovo \
+  SRR9331959_algae_denovo SRR9331961 \
   --cpus 6
 ```
 
@@ -184,7 +201,7 @@ Extract a specific transcript's alignments from sample alignments (see above)
 
 ```
 PILE_WORKSPACE=PM32426508 pile-py pile/alignment_extract.py -a \
-  SRR9331961 SRR9331959_algae_denovo TRINITY_DN7562_c0_g1_i1
+  SRR9331959_algae_denovo SRR9331961 TRINITY_DN7562_c0_g1_i1
 ``` 
 
 Create alignment pileups of transcripts in a second transcriptome, releated to

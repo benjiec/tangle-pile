@@ -4,7 +4,8 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from pile import run_command, Defaults, process_file_or_literal, FastaHeaderProvenance
+from pile import run_command, process_file_or_literal, FastaHeaderProvenance
+from pile.defaults import Defaults
 
 
 def final_robust_parse(transcript_accession, file_path):
@@ -172,8 +173,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("sra_accession")
     parser.add_argument("transcriptome")
+    parser.add_argument("sra_accession")
     parser.add_argument("transcripts", help="Expects a file of transcript IDs, or - for stdin")
     parser.add_argument("-a", "--accession", action="store_true", default=False, help="treat <transcripts> as the accession, not a file")
     args = parser.parse_args()

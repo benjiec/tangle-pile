@@ -22,7 +22,7 @@ WORKDIR /pile
 COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml ./ 
 RUN micromamba run -n base pip install --no-cache-dir . || true
 
-COPY --chown=$MAMBA_USER:$MAMBA_USER . .
+COPY --chown=$MAMBA_USER:$MAMBA_USER pile .
 RUN micromamba run -n base pip install --no-cache-dir .
 
 ENV PATH="/pile:${PATH}"

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-from pile import run_command, Defaults, named_tempfile
+from pile import run_command, named_tempfile
+from pile.defaults import Defaults
 
 
-def bowtie2_align(workspace, transcriptome, clustered, sra_accession, sam_fn, cpus):
+def bowtie2_align(workspace, transcriptome, unclustered, sra_accession, sam_fn, cpus):
     reads_1 = Defaults.read_1(workspace, sra_accession)
     reads_2 = Defaults.read_2(workspace, sra_accession)
-    if clustered:
-        tx = Defaults.transcriptome_cluster_fasta(workspace, transcriptome)
+    if unclustered:
+        tx = Defaults.transcriptome_unclustered_fasta(workspace, transcriptome)
     else:
         tx = Defaults.transcriptome_fasta(workspace, transcriptome)
 
@@ -31,9 +32,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("sra_accession")
     parser.add_argument("transcriptome")
-    parser.add_argument("--clustered", action="store_true", default=False)
+    parser.add_argument("sra_accession")
+    parser.add_argument("--unclustered", action="store_true", default=False)
     parser.add_argument("--cpus", default=4)
     args = parser.parse_args()
 
@@ -41,5 +42,5 @@ if __name__ == "__main__":
 
     with Defaults.named_tempdir(Defaults.workspace()) as temp_dir:
         with named_tempfile(dir=temp_dir) as sam_fn:
-            bowtie2_align(Defaults.workspace(), args.transcriptome, args.clustered, args.sra_accession, sam_fn, args.cpus)
+            bowtie2_align(Defaults.workspace(), args.transcriptome, args.unclustered, args.sra_accession, sam_fn, args.cpus)
             sam_to_sorted_bam(temp_dir, sam_fn, bam_fn)
