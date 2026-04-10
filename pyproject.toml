@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pile"
 version = "0.1.0"
 dependencies = [
-  "tangle @ git+https://github.com/benjiec/tangle.git@76da5f1",
+  "tangle @ git+https://github.com/benjiec/tangle.git@5bf093e",
   "matplotlib>=3.10.7",
   "numpy>=1.24.0"
 ]
