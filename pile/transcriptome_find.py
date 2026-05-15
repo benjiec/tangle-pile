@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
+from tangle.sequence import read_fasta_as_dict
 from pile import process_file_or_literal, FastaHeaderProvenance
-from pile.fasta import read_fasta_as_dict
 from pile.defaults import Defaults
 
 

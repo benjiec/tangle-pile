@@ -1,7 +1,9 @@
 import os
+import functools
 from pathlib import Path
 from contextlib import contextmanager
-from tangle.defaults import PathDefaultsBase
+from tangle.defaults import PathDefaultsBase, maybe_gzipped
+from pile import clean_for_fn, mkdir_exists
 
 
 class Defaults(PathDefaultsBase):
@@ -33,10 +35,12 @@ class Defaults(PathDefaultsBase):
     def ncbi_dir():
         return Defaults.workspace_dir("ncbi")
 
+    @maybe_gzipped
     @staticmethod
     def ncbi_genome_genomic(genome_accession):
         return str(Path(Defaults.ncbi_dir()) / genome_accession / "genomic.fna")
 
+    @maybe_gzipped
     @staticmethod
     def ncbi_genome_proteins(genome_accession):
         return str(Path(Defaults.ncbi_dir()) / genome_accession / "proteins.faa")
@@ -47,6 +51,7 @@ class Defaults(PathDefaultsBase):
         mkdir_exists(dn)
         return dn
 
+    @maybe_gzipped
     @staticmethod
     def read_1(workspace, sra_accession, gzip=True):
         fn = f"{Defaults.reads_dir(workspace)}/{sra_accession}_1.fastq"
@@ -57,6 +62,7 @@ class Defaults(PathDefaultsBase):
             return str(gzfn)
         return fn
 
+    @maybe_gzipped
     @staticmethod
     def read_2(workspace, sra_accession, gzip=True):
         fn = f"{Defaults.reads_dir(workspace)}/{sra_accession}_2.fastq"
@@ -80,6 +86,7 @@ class Defaults(PathDefaultsBase):
         mkdir_exists(dn)
         return dn
 
+    @maybe_gzipped
     @staticmethod
     def transcriptome_fasta(workspace, transcriptome, gzip=True):
         fn = str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcripts.fna")
@@ -94,14 +101,17 @@ class Defaults(PathDefaultsBase):
     def transcriptome_salmon_index(workspace, transcriptome):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcripts.fna.salmon_index")
 
+    @maybe_gzipped
     @staticmethod
     def transcriptome_proteins_fasta(workspace, transcriptome):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "proteins.faa")
 
+    @maybe_gzipped
     @staticmethod
     def transcriptome_proteins_gff(workspace, transcriptome):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "proteins.gff3")
 
+    @maybe_gzipped
     @staticmethod
     def transcriptome_unclustered_fasta(workspace, transcriptome, gzip=True):
         fn = str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcripts.unclustered.fna")
@@ -116,10 +126,12 @@ class Defaults(PathDefaultsBase):
     def transcriptome_unclustered_salmon_index(workspace, transcriptome):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / "transcripts.unclustered.fna.salmon_index")
 
+    @maybe_gzipped
     @staticmethod
     def transcriptome_filtered_read_1(workspace, transcriptome, sra_accession):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / f"{sra_accession}_filtered_1.fastq")
 
+    @maybe_gzipped
     @staticmethod
     def transcriptome_filtered_read_2(workspace, transcriptome, sra_accession):
         return str(Path(Defaults.transcriptome_dir(workspace, transcriptome)) / f"{sra_accession}_filtered_2.fastq")
