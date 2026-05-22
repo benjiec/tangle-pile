@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pile import run_command, named_tempdir, assert_exists
+from pile import run_command, assert_exists
 from pile.defaults import Defaults
 
 
@@ -24,4 +24,4 @@ if __name__ == "__main__":
     parser.add_argument("sra_accession")
     args = parser.parse_args()
 
-    sra_fetch(Defaults.workspace(), args.sra_read_accession)
+    sra_fetch(Defaults.workspace(), args.sra_accession)

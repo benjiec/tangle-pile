@@ -3,7 +3,7 @@ import functools
 from pathlib import Path
 from contextlib import contextmanager
 from tangle.defaults import PathDefaultsBase, maybe_gzipped
-from pile import clean_for_fn, mkdir_exists
+from pile import clean_for_fn, mkdir_exists, named_tempdir
 
 
 class Defaults(PathDefaultsBase):
