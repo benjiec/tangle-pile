@@ -89,12 +89,15 @@ PILE_WORKSPACE=PM32426508 pile-py pile/quant_reads.py \
   GCA_947184155.2 SRR9331959
 ```
 
+The above are equivalent of running the following inside a container
+
 ```
 # in docker, in transcriptome directory
-salmon index -t pseudodiploria_symb.fna.gz_rep_seq.fna -i pseudodiploria_symb.salmon_index
-salmon quant -i pseudodiploria_symb.salmon_index \
-  -l A --validateMappings -o symb_quants/SRR6255880 -p 2\
-  -1 reads/SRR6255880_1.fastq -2 reads/SRR6255880_2.fastq
+salmon index -t transcripts.fna -i transcripts.salmon_index
+salmon quant -i transcripts.salmon_index \
+  -p 2 -l A --validateMappings \
+  -o ../../quants/<transcriptome_name>/SRR6255880 
+  -1 ../../reads/SRR6255880_1.fastq -2 ../../reads/SRR6255880_2.fastq
 ```
 
 
