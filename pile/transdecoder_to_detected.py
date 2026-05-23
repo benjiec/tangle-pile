@@ -98,7 +98,7 @@ def results_to_detected_table(
 
         gene_row = row.copy()
         gene_row["query_type"] = "transcript"
-        gene_row["target_type"] = "gene"
+        gene_row["target_type"] = "cds"
         gene_row["query_accession"] = res["transcript_accession"]
         gene_row["target_accession"] = res["gene_accession"]
         gene_row["query_start"] = res["transcript_gene_start"]
@@ -107,7 +107,7 @@ def results_to_detected_table(
         gene_row["target_end"] = abs(res["transcript_gene_start"]-res["transcript_gene_end"])+1
 
         protein_row = row.copy()
-        protein_row["query_type"] = "gene"
+        protein_row["query_type"] = "cds"
         protein_row["target_type"] = "protein"
         protein_row["query_accession"] = res["gene_accession"]
         protein_row["target_accession"] = res["mrna_accession"]
