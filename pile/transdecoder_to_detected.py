@@ -76,6 +76,7 @@ def results_to_detected_table(
     results,
     result_tsv,
     transcriptome_name,
+    database_name,
     batch=None
   ):
 
@@ -92,8 +93,8 @@ def results_to_detected_table(
         row["detection_type"] = "sequence"
         row["detection_method"] = "transdecoder"
         row["batch"] = batch
-        row["query_database"] = transcriptome_name
-        row["target_database"] = transcriptome_name
+        row["query_database"] = database_name
+        row["target_database"] = database_name
 
         gene_row = row.copy()
         gene_row["query_type"] = "transcript"
@@ -140,6 +141,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--database-name", required=True)
     parser.add_argument("transcriptome")
     args = parser.parse_args()
 
@@ -148,4 +150,4 @@ if __name__ == "__main__":
     detected_tsv = str(Path(transcriptome_dir) / "detected.tsv")
 
     results = parse_transdecoder_gff(gff_file)
-    results_to_detected_table(results, detected_tsv, args.transcriptome)
+    results_to_detected_table(results, detected_tsv, args.transcriptome, args.database_name)

@@ -206,7 +206,7 @@ class TestDetectedTSV(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             detected_tsv = os.path.join(temp_dir, "detected.tsv")
-            results_to_detected_table(results, detected_tsv, "foo", batch="20260327_ff30c5d5")
+            results_to_detected_table(results, detected_tsv, "foo", "foo", batch="20260327_ff30c5d5")
 
             expected = """
 detection_type	detection_method	batch	query_accession	query_database	query_type	target_accession	target_database	target_type	target_model	query_start	query_end	target_start	target_end	evalue	bitscore	bitscore_threshold	custom_metric_name	custom_metric_value
@@ -245,5 +245,5 @@ sequence	transdecoder	20260327_ff30c5d5	g2	foo	gene	m2	foo	protein		251	5488	1	1
         with tempfile.TemporaryDirectory() as temp_dir:
             detected_tsv = os.path.join(temp_dir, "detected.tsv")
             with self.assertRaises(AssertionError) as e:
-                results_to_detected_table(results, detected_tsv, "foo", batch="20260327_ff30c5d5")
+                results_to_detected_table(results, detected_tsv, "foo", "foo", batch="20260327_ff30c5d5")
             self.assertEqual(str(e.exception), "Duplicate gene ID g1")
