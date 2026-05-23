@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from pile import run_command, Defaults
+from pile import run_command
+from pile.defaults import Defaults
 
 if __name__ == "__main__":
     import argparse
