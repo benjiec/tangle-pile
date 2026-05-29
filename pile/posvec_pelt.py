@@ -18,10 +18,12 @@ def parse_mpileup_alignment_tracks(filepath, target_tx):
     features = []
     last_pos = None
 
+    """
     print(
         f"[*] Extracting positions and detecting gaps for {target_tx}...",
         file=sys.stderr,
     )
+    """
 
     with open(filepath, "r") as f:
         for line in f:
@@ -76,7 +78,11 @@ def parse_mpileup_alignment_tracks(filepath, target_tx):
 
 def standardize_signal_variance(feature_matrix):
     """Standardizes variance across multi-scale channels using log and Z-score transformations."""
+
+    """
     print("[*] Normalizing multi-channel signal tracks...", file=sys.stderr)
+    """
+
     norm_matrix = np.copy(feature_matrix)
 
     # Log-transform depth channel
@@ -90,10 +96,14 @@ def standardize_signal_variance(feature_matrix):
 
 def detect_signal_changepoints(normalized_matrix, positions, penalty, min_size):
     """Runs PELT change-point detection to identify segment array indexes."""
+
+    """
     print(
         f"[*] Computing PELT segmentation (Penalty={penalty}, Min_Size={min_size})...",
         file=sys.stderr,
     )
+    """
+
     algo = rpt.KernelCPD(kernel="rbf", min_size=min_size).fit(normalized_matrix)
     return algo.predict(pen=penalty)
 
@@ -105,7 +115,11 @@ def compile_segment_summaries(
 
     and generates the structured CIGAR-like summary records.
     """
+
+    """
     print("[*] Generating categorical segment summaries...", file=sys.stderr)
+    """
+
     segment_records = []
     start_idx = 0
 
@@ -159,9 +173,15 @@ def compile_segment_summaries(
     return segment_records
 
 
+def generate_summary_string(transcript_id, raw_positions, global_mean_depth, segments):
+    seg_summaries = [
+        f"{seg['start']}-{seg['end']}:{seg['tag']}" for seg in segments
+    ]
+    return ",".join(seg_summaries)
+
+
 def print_report(transcript_id, raw_positions, global_mean_depth, segments):
     """Console print formatter for the compiled segmentation report."""
-    print("\n=== CLASSIFIED SEGMENTATION REPORT ===")
     print(f"Transcript ID: {transcript_id}")
     print(f"Total Reference Span: {raw_positions[0]} - {raw_positions[-1]} bp")
     print(f"Global Base Mean Depth: {global_mean_depth:.2f}")
@@ -212,7 +232,8 @@ if __name__ == "__main__":
             feature_matrix, raw_positions, result_indexes, global_mean_depth
         )
 
-        print_report(args.transcript, raw_positions, global_mean_depth, segments)
+        # print_report(args.transcript, raw_positions, global_mean_depth, segments)
+        print("%s\t%s" % (args.transcript, generate_summary_string(args.transcript, raw_positions, global_mean_depth, segments)))
 
     except Exception as e:
         print(f"[!] Execution failure: {e}", file=sys.stderr)
