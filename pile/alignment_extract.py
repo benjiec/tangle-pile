@@ -32,14 +32,26 @@ def final_robust_parse(transcript_accession, file_path):
     clips = {}
     indels = {}
     
+    # Track which reads have already contributed to depth at specific positions
+    # Key: position, Value: set of read names (QNAME)
+    fragment_registry = {i: set() for i in range(1, transcript_len + 1)}
+    
     with open(file_path, 'r') as f:
         for line in f:
             parts = line.split('\t')
             if len(parts) < 11: continue
+            
+            qname = parts[0]
+            flag = int(parts[1])
             pos = int(parts[3])
             cigar = parts[5]
             seq = parts[9]
+            qual = parts[10]
             
+            # skip secondary (256), duplicate (1024), and supplementary (2048) alignments
+            if flag & (0x100 | 0x400 | 0x800):
+                continue
+
             curr_ref_pos = pos
             curr_read_pos = 0
             cigar_ops = re.findall(r'(\d+)([MIDNSHP=X])', cigar)
@@ -54,11 +66,21 @@ def final_robust_parse(transcript_accession, file_path):
                 if op in 'M=X':
                     for i in range(length):
                         if 1 <= curr_ref_pos <= transcript_len:
-                            depth[curr_ref_pos] += 1
-                            if seq != "*" and curr_read_pos < len(seq):
-                                base = seq[curr_read_pos]
-                                if curr_ref_pos not in snps: snps[curr_ref_pos] = {}
-                                snps[curr_ref_pos][base] = snps[curr_ref_pos].get(base, 0) + 1
+                            if qual != "*" and curr_read_pos < len(qual):
+                                phred_score = ord(qual[curr_read_pos]) - 33
+                                if phred_score >= 20:
+				    # deduplicate overlapping mate pairs. only
+				    # count if this read fragment hasn't
+				    # already been processed at this specific
+				    # position.
+                                    if qname not in fragment_registry[curr_ref_pos]:
+                                        fragment_registry[curr_ref_pos].add(qname)
+                                        depth[curr_ref_pos] += 1
+                                        
+                                        if seq != "*" and curr_read_pos < len(seq):
+                                            base = seq[curr_read_pos]
+                                            if curr_ref_pos not in snps: snps[curr_ref_pos] = {}
+                                            snps[curr_ref_pos][base] = snps[curr_ref_pos].get(base, 0) + 1
                         curr_ref_pos += 1
                         curr_read_pos += 1
                 elif op == 'I':
@@ -66,10 +88,9 @@ def final_robust_parse(transcript_accession, file_path):
                         indels[curr_ref_pos] = indels.get(curr_ref_pos, 0) + 1
                     curr_read_pos += length
                 elif op == 'D':
-                    for i in range(length):
-                        if 1 <= curr_ref_pos <= transcript_len:
-                            indels[curr_ref_pos] = indels.get(curr_ref_pos, 0) + 1
-                        curr_ref_pos += 1
+                    if 1 <= curr_ref_pos <= transcript_len:
+                        indels[curr_ref_pos] = indels.get(curr_ref_pos, 0) + 1
+                    curr_ref_pos += length
                 elif op == 'S':
                     if curr_read_pos > 0:
                         if 1 <= curr_ref_pos <= transcript_len:
