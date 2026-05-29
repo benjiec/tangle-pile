@@ -155,6 +155,16 @@ quantification, classification etc -- all use clustered transcriptome. This
 consistency is important.
 
 
+### Combining transcriptomes
+
+If samples are sequenced with multiple species, they should be counted with concatenated transcriptomes
+
+```
+PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_concat.py \
+  a b c
+```
+
+
 ### TransDecoder ORF and protein prediction
 
 Use TransDecoder to predict ORFs
