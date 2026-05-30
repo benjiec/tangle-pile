@@ -245,3 +245,24 @@ bowtie2 --local -f -p 8 \
   -U query.fasta \
   -S results.sam
 ```
+
+Using samtools mpileup feature to generate position vectors
+
+```
+bowtie2 --local --very-sensitive-local -p 8 \
+  -x /users/pile/PM34593802/transcriptomes/orbicella_faveolata_symbiodinium_a3/transcripts.fna.gz \
+  -1 /users/pile/PM34593802/reads/SRR6255844_1.fastq.gz \
+  -2 /users/pile/PM34593802/reads/SRR6255844_2.fastq.gz | \
+samtools sort -@ 4 -O BAM | \
+samtools mpileup -Q 20 -d 100000 \
+  -f /users/pile/PM34593802/transcriptomes/orbicella_faveolata_symbiodinium_a3/transcripts.fna - \
+  > /users/pile/PM34593802/alignments/SRR6255844.orbicella_faveolata_symbiodinium_a3.pos.txt
+```
+
+Then parse the position vectors to generate a summary of the read coverage, using PELT
+
+```
+grep orbicella_host_TRINITY_DN216370_c1_g2_i10 \
+  /users/pile/PM34593802/alignments/SRR6255844.orbicella_faveolata_symbiodinium_a3.pos.txt > transcript_posvec.txt
+pile-py pile/posvec_pelt.py -i transcript_posvec.txt -t orbicella_host_TRINITY_DN216370_c1_g2_i10
+```
