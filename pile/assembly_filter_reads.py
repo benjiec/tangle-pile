@@ -22,12 +22,12 @@ def bowtie2_filter_reads_remove(read_1, read_2, genomic_fn, prefix, cpus):
 
 def bowtie2_filter_reads_capture(read_1, read_2, genomic_fn, prefix, cpus):
 
-    # using --local because we want all reads that map to specified genome even
-    # if locally
+    # not using --local because we want all reads that map to specified genome
+    # but we don't want very small partially mappable reads that are artifacts
+    # or belong to another species
 
     run_command(
       "bowtie2", "-p", str(cpus),
-      "--local",
       "-x", genomic_fn,
       "-1", reads_1,
       "-2", reads_2,
@@ -64,10 +64,14 @@ if __name__ == "__main__":
 
     transcriptome_dir = Defaults.transcriptome_dir(Defaults.workspace(), args.transcriptome)
     to_clean = []
+    actions = []
 
     if args.remove:
         genomic_fn = Defaults.ncbi_genome_genomic(args.remove)
-        prefix = str(Path(transcriptome_dir) / (args.sra_accession+f"_{args.remove}_removed"))
+        actions.append(f"{args.remove}_removed")
+        action_str = "_".join(actions)
+
+        prefix = str(Path(transcriptome_dir) / (args.sra_accession+"_"+action_str))
         output_reads_1 = Path(prefix+".1.fastq")
         output_reads_2 = Path(prefix+".2.fastq")
         if args.force or not output_reads_1.exists() or output_reads_1.stat().st_size == 0:
@@ -78,7 +82,10 @@ if __name__ == "__main__":
 
     if args.capture:
         genomic_fn = Defaults.ncbi_genome_genomic(args.capture)
-        prefix = str(Path(transcriptome_dir) / (args.sra_accession+f"_{args.capture}_captured"))
+        actions.append(f"{args.capture}_captured")
+        action_str = "_".join(actions)
+
+        prefix = str(Path(transcriptome_dir) / (args.sra_accession+"_"+action_str))
         output_reads_1 = Path(prefix+".1.fastq")
         output_reads_2 = Path(prefix+".2.fastq")
         if args.force or not output_reads_1.exists() or output_reads_1.stat().st_size == 0:
