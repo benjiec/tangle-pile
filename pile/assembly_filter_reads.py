@@ -59,6 +59,7 @@ if __name__ == "__main__":
     parser.add_argument("sra_accession")
     parser.add_argument("--remove", default=None)
     parser.add_argument("--capture", default=None)
+    parser.add_argument("--normalize-depth", default=0, type=int)
     parser.add_argument("--cpus", default=4, type=int)
     parser.add_argument("--force", default=False, action="store_true")
     args = parser.parse_args()
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     transcriptome_dir = Defaults.transcriptome_dir(Defaults.workspace(), args.transcriptome)
     to_clean = []
     actions = []
+    output = []
 
     if args.remove:
         genomic_fn = Defaults.ncbi_genome_genomic(args.remove)
@@ -82,7 +84,8 @@ if __name__ == "__main__":
             bowtie2_filter_reads_remove(reads_1, reads_2, genomic_fn, prefix+".fastq", args.cpus)
         reads_1 = str(output_reads_1)
         reads_2 = str(output_reads_2)
-        to_clean.extend([reads_1, reads_2])
+        output = [reads_1, reads_2]
+        to_clean.extend(output)
 
     if args.capture:
         genomic_fn = Defaults.ncbi_genome_genomic(args.capture)
@@ -96,14 +99,18 @@ if __name__ == "__main__":
             bowtie2_filter_reads_capture(reads_1, reads_2, genomic_fn, prefix+".fastq", args.cpus)
         reads_1 = str(output_reads_1)
         reads_2 = str(output_reads_2)
-        to_clean.extend([reads_1, reads_2])
+        output = [reads_1, reads_2]
+        to_clean.extend(output)
 
-    filtered_reads_1 = Defaults.transcriptome_filtered_read_1(Defaults.workspace(), args.transcriptome, args.sra_accession)
-    filtered_reads_2 = Defaults.transcriptome_filtered_read_2(Defaults.workspace(), args.transcriptome, args.sra_accession)
-    normalize_reads(reads_1, reads_2, filtered_reads_1, filtered_reads_2, 50)
+    if args.normalize_depth > 0:
+        filtered_reads_1 = Defaults.transcriptome_filtered_read_1(Defaults.workspace(), args.transcriptome, args.sra_accession)
+        filtered_reads_2 = Defaults.transcriptome_filtered_read_2(Defaults.workspace(), args.transcriptome, args.sra_accession)
+        normalize_reads(reads_1, reads_2, filtered_reads_1, filtered_reads_2, args.normalize_depth)
+        output = [filtered_reads_1, filtered_reads_2]
+        to_clean.extend(output)
 
     for fn in to_clean:
-        if fn not in (orig_reads_1, orig_reads_2):
+        if fn not in (orig_reads_1, orig_reads_2) and fn not in output:
             pfn = Path(fn)
             if pfn.exists():
                 print(f"removing {fn}")
