@@ -43,6 +43,10 @@ def normalize_reads(read_1, read_2, normalized_read_1, normalized_read_2, target
         "-in2="+read_2,
         "-out1="+normalized_read_1,
         "-out2="+normalized_read_2,
+        "min=3",
+        "bits=16",
+        "prefilter=true",
+        "passes=1",  # apparently we really don't want a second pass as in that pass low coverage transcripts may be confused as noise
         "target="+str(target_depth)
     )
 
