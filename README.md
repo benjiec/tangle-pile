@@ -131,8 +131,8 @@ the Trinity step.
 bbnorm.sh \
   in1=c_goreaui_pooled_1.fq.gz \
   in2=c_goreaui_pooled_2.fq.gz \
-  out1=/users/pile/PM32426508/transcriptomes/c_goreaui/norm_1.fastq \
-  out2=/users/pile/PM32426508/transcriptomes/c_goreaui/norm_2.fastq \
+  out1=norm_1.fastq \
+  out2=norm_2.fastq \
   target=40 \
   min=6 \
   bits=16 \
@@ -144,9 +144,9 @@ Trinity assembly, after you have filtered the reads
 
 ```
 # inside docker, in transcriptome directory
-Trinity --seqType fq --max_memory 20G --CPU 8 --no_normalize_reads \
-        --left c_goreaui_pooled_1.fq \
-        --right c_goreaui_pooled_2.fq \
+Trinity --seqType fq --max_memory 20G --CPU 8 \
+        --left norm_1.fastq \
+        --right norm_2.fastq \
         --output trinity_transcript 
 
 TrinityStats.pl transcript.Trinity.fasta
