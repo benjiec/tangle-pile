@@ -121,8 +121,11 @@ PILE_WORKSPACE=PM32426508 pile-py pile/assembly_filter_reads.py \
   --remove GCA_947184155.2
 ```
 
-If you need to pool reads, pool them now. Then run `bbnorm.sh` to normalize
-depth so we don't run out of memory during the Trinity step.
+If you need to pool reads, pool them now. It is important to POOL BEFORE
+NORMALIZATION.
+
+Then run `bbnorm.sh` to normalize depth so we don't run out of memory during
+the Trinity step.
 
 ```
 bbnorm.sh \
