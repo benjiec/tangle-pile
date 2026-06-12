@@ -116,10 +116,27 @@ To filter reads for Trinity assembly
 
 ```
 PILE_WORKSPACE=PM32426508 pile-py pile/assembly_filter_reads.py \
-    SRR9331961_algae_denovo \
-    SRR9331961 \
-    --remove GCA_014633955.1 \
-    --capture GCA_947184155.2
+  a_tenuis SRR9331965 \
+  --capture GCA_014633955.1 \
+  --remove GCA_947184155.2
+```
+
+If you need to pool reads, pool them now. Then run `bbnorm.sh` to normalize
+depth so we don't run out of memory during the Trinity step. If the read files
+are too large, use mkfifo to create a FIFO pipe rather than actually creating a
+pooled file.
+
+```
+bbnorm.sh \
+  in1=c_goreaui_pooled_1.fq \
+  in2=c_goreaui_pooled_2.fq \
+  out1=/users/pile/PM32426508/transcriptomes/c_goreaui/norm_1.fastq \
+  out2=/users/pile/PM32426508/transcriptomes/c_goreaui/norm_2.fastq \
+  target=40 \
+  min=6 \
+  bits=16 \
+  prefilter=true \
+  passes=1
 ```
 
 Trinity assembly, after you have filtered the reads
@@ -127,8 +144,8 @@ Trinity assembly, after you have filtered the reads
 ```
 # inside docker, in transcriptome directory
 Trinity --seqType fq --max_memory 20G --CPU 8 --no_normalize_reads \
-        --left SRR9331961_filtered_1.fastq \
-        --right SRR9331961_filtered_2.fastq \
+        --left c_goreaui_pooled_1.fq \
+        --right c_goreaui_pooled_2.fq \
         --output trinity_transcript 
 
 TrinityStats.pl transcript.Trinity.fasta
