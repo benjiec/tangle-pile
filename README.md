@@ -122,14 +122,12 @@ PILE_WORKSPACE=PM32426508 pile-py pile/assembly_filter_reads.py \
 ```
 
 If you need to pool reads, pool them now. Then run `bbnorm.sh` to normalize
-depth so we don't run out of memory during the Trinity step. If the read files
-are too large, use mkfifo to create a FIFO pipe rather than actually creating a
-pooled file.
+depth so we don't run out of memory during the Trinity step.
 
 ```
 bbnorm.sh \
-  in1=c_goreaui_pooled_1.fq \
-  in2=c_goreaui_pooled_2.fq \
+  in1=c_goreaui_pooled_1.fq.gz \
+  in2=c_goreaui_pooled_2.fq.gz \
   out1=/users/pile/PM32426508/transcriptomes/c_goreaui/norm_1.fastq \
   out2=/users/pile/PM32426508/transcriptomes/c_goreaui/norm_2.fastq \
   target=40 \
