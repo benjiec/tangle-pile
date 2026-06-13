@@ -75,6 +75,18 @@ files in the transcriptome directory
 If creating a transcriptome from scratch using Trinity, follow the Trinity
 workflow steps below.
 
+
+### Combining transcriptomes
+
+If samples are sequenced with multiple species, they should be counted with concatenated transcriptomes
+
+```
+PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_concat.py \
+  a b c
+```
+
+### Quantification
+
 Create Salmon index for the transcriptome
 
 ```
@@ -129,8 +141,8 @@ the Trinity step.
 
 ```
 bbnorm.sh \
-  in1=c_goreaui_pooled_1.fq.gz \
-  in2=c_goreaui_pooled_2.fq.gz \
+  in1=pooled_1.fastq \
+  in2=pooled_2.fastq \
   out1=norm_1.fastq \
   out2=norm_2.fastq \
   target=40 \
@@ -152,7 +164,7 @@ Trinity --seqType fq --max_memory 20G --CPU 8 \
 TrinityStats.pl transcript.Trinity.fasta
 ```
 
-### Clustering
+### Transcriptome Clustering
 
 If you have mmseqs Docker image, then use the following to cluster transcripts.
 Note that clustered transcripts should only be used for certain differential
@@ -173,16 +185,6 @@ quantification, classification etc -- all use clustered transcriptome. This
 consistency is important.
 
 
-### Combining transcriptomes
-
-If samples are sequenced with multiple species, they should be counted with concatenated transcriptomes
-
-```
-PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_concat.py \
-  a b c
-```
-
-
 ### TransDecoder ORF and protein prediction
 
 Use TransDecoder to predict ORFs
@@ -200,7 +202,8 @@ need to run TransDecoder first)
 
 ```
 PILE_WORKSPACE=PM32426508 pile-py pile/transdecoder_to_detected.py \
-  SRR9331959_algae_denovo
+  --database-name=EXP_PM32426508 \
+  c_goreaui
 ```
 
 
