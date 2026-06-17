@@ -152,14 +152,16 @@ bbnorm.sh \
   passes=1
 ```
 
-Trinity assembly, after you have filtered the reads
+To make a Trinity assembly, after you have filtered the reads, run the
+following (the last two arguments help the run fit under the memory constraint)
 
 ```
 # inside docker, in transcriptome directory
 Trinity --seqType fq --max_memory 20G --CPU 8 \
         --left norm_1.fastq \
         --right norm_2.fastq \
-        --output trinity_transcript 
+        --output trinity_transcript \
+        --min_kmer_cov 2
 
 TrinityStats.pl transcript.Trinity.fasta
 ```
