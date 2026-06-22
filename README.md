@@ -78,7 +78,15 @@ workflow steps below.
 
 ### Combining transcriptomes
 
-If samples are sequenced with multiple species, they should be counted with concatenated transcriptomes
+If samples are sequenced with multiple species, they should be counted with
+concatenated transcriptomes. First, use the following script to add species
+prefix to accessions
+
+```
+tangle-py ~/git/tangle/tangle/scripts/fasta-pool.py --database a_tenuis --delim _ transcripts.fna.gz
+```
+
+Then
 
 ```
 PILE_WORKSPACE=PM32426508 pile-py pile/transcriptome_concat.py \
@@ -165,6 +173,13 @@ Trinity --seqType fq --max_memory 20G --CPU 8 \
 
 TrinityStats.pl transcript.Trinity.fasta
 ```
+
+Use the following script to add species prefix to accessions
+
+```
+tangle-py ~/git/tangle/tangle/scripts/fasta-pool.py --database a_tenuis --delim _ transcripts.fna.gz
+```
+
 
 ### Transcriptome Clustering
 
