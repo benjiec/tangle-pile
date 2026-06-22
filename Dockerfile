@@ -2,7 +2,7 @@ FROM mambaorg/micromamba:latest
 
 USER root
 RUN apt-get update && apt-get install -y \
-    git strace procps
+    git strace procps gdb
 
 USER $MAMBA_USER
 RUN micromamba install -y -n base -c conda-forge -c bioconda \
@@ -15,6 +15,7 @@ RUN micromamba install -y -n base -c conda-forge -c bioconda \
     transdecoder=5.7.1 \
     trinity=2.15.2 \
     sra-tools=3.2.1 \
+    seqtk=1.5 \
     && micromamba clean --all --yes
 
 WORKDIR /pile
