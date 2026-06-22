@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     run_command(
       "salmon", "quant",
-      "-l", "A", "--validateMappings", "--posBias", "-p", "2",
+      "-l", "A", "--validateMappings", "--posBias", "-p", str(args.cpus),
       "-i", index_fn,
       "-o", quant_dir,
       "-1", read_1, "-2", read_2)
